@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from json import dumps
 from flask_jsonpify import jsonify
 
+import RPi.GPIO as GPIO
 import smbus
 import time
 import threading
@@ -12,6 +13,9 @@ db_connect = create_engine('sqlite:///chinook.db')
 app = Flask(__name__)
 api = Api(app)
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(25, GPIO.OUT)
 
 # Define some constants from the datasheet
 
@@ -78,11 +82,35 @@ class Light(Resource):
         # print("Light Level : " + format(lightLevel,'.2f') + " lx")
         return {'light': format(lightLevel,'.2f') + " lx"}
 
+class ReadPin(Resource):
+    def get(self, pin_number):
+        status = GPIO.input(int(pin_number))
+
+        return {'pin_number':pin_number, 'status': status}
+
+class ToggleLed(Resource):
+    def post(self):
+        # lightLevel=readLight()
+        # print("Light Level : " + format(lightLevel,'.2f') + " lx")
+        data = request.json
+        status25 = GPIO.input(25)
+
+        if status25 == GPIO.HIGH:
+            GPIO.output(25,GPIO.LOW)
+        else:
+            GPIO.output(25,GPIO.HIGH)
+
+        status25 = GPIO.input(25)
+        print("Status: %d",status25)
+        return {'status': status25}
 
 api.add_resource(Employees, '/employees') # Route_1
 api.add_resource(Tracks, '/tracks') # Route_2
 api.add_resource(Employees_Name, '/employees/<employee_id>') # Route_3
 api.add_resource(Light, '/light') # Route_4
+
+api.add_resource(ReadPin, '/readpin/<pin_number>') # Route_3
+api.add_resource(ToggleLed, '/toggleled') # Route_5
 
 def set_interval(func, sec):
     def func_wrapper():
@@ -101,4 +129,4 @@ def chekLight():
 set_interval(chekLight,1)
 
 if __name__ == '__main__':
-     app.run(port='5002')
+     app.run(host='192.168.1.6',port='5002')
