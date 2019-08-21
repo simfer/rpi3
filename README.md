@@ -32,3 +32,16 @@ Then open the Raspbian config page with `sudo raspi-config` and enable
 the I2C channel in the Interface Options
 To test the I2C run `sudo i2cdetect -y 1`
 
+# Come lanciare il programma
+python3 server.py
+
+# Come far partire in automatico il programma al boot
+sudo systemctl enable rpi3.service
+sudo systemctl start rpi3.service
+
+# Come fare il restart del programma
+sudo systemctl restart rpi3.service
+
+# Come verificare lo stato del programma
+sudo systemctl status rpi3.service
+

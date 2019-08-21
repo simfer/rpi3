@@ -51,9 +51,13 @@ def convertToNumber(data):
   return (result)
 
 def readLight(addr=DEVICE):
-  # Read data from I2C interface
-  data = bus.read_i2c_block_data(addr,ONE_TIME_HIGH_RES_MODE_1)
-  return convertToNumber(data)
+    # Read data from I2C interface
+    data = bus.read_i2c_block_data(addr,ONE_TIME_HIGH_RES_MODE_1)
+    return convertToNumber(data)
+
+def readDevice(addr):
+    data = bus.read_i2c_block_data(addr,ONE_TIME_HIGH_RES_MODE_1)
+    return convertToNumber(data)
 
 
 class Employees(Resource):
@@ -81,6 +85,11 @@ class Light(Resource):
         lightLevel=readLight()
         # print("Light Level : " + format(lightLevel,'.2f') + " lx")
         return {'lightx': format(lightLevel,'.2f') + " lx"}
+
+class ReadI2CDevice(Resource):
+    def get(self, device_address):
+        I2CDeviceValue = readDevice(hex(23))
+        return {'i2cdevicevalue': I2CDeviceValue}
 
 class ReadPin(Resource):
     def get(self, pin_number):
@@ -111,6 +120,7 @@ api.add_resource(Employees, '/employees') # Route_1
 api.add_resource(Tracks, '/tracks') # Route_2
 api.add_resource(Employees_Name, '/employees/<employee_id>') # Route_3
 api.add_resource(Light, '/light') # Route_4
+api.add_resource(ReadI2CDevice, '/readi2cdevice/<device_address>') # Route_4
 
 api.add_resource(ReadPin, '/readpin/<pin_number>') # Route_3
 api.add_resource(WritePin, '/writepin/<pin_number>/<value>') # Route_3
