@@ -80,7 +80,7 @@ class Light(Resource):
     def get(self):
         lightLevel=readLight()
         # print("Light Level : " + format(lightLevel,'.2f') + " lx")
-        return {'light': format(lightLevel,'.2f') + " lx"}
+        return {'lightx': format(lightLevel,'.2f') + " lx"}
 
 class ReadPin(Resource):
     def get(self, pin_number):
@@ -88,21 +88,24 @@ class ReadPin(Resource):
 
         return {'pin_number':pin_number, 'status': status}
 
-class ToggleLed(Resource):
-    def post(self):
-        # lightLevel=readLight()
-        # print("Light Level : " + format(lightLevel,'.2f') + " lx")
-        data = request.json
-        status25 = GPIO.input(25)
+class WritePin(Resource):
+    def get(self, pin_number,value):
+        GPIO.output(int(pin_number),int(value))
+        status = GPIO.input(int(pin_number))
+        return {'pin_number':pin_number, 'status': status}
 
-        if status25 == GPIO.HIGH:
-            GPIO.output(25,GPIO.LOW)
+class TogglePin(Resource):
+    def get(self, pin_number):
+
+        status = GPIO.input(int(pin_number))
+        if status == GPIO.HIGH:
+            GPIO.output(int(pin_number),GPIO.LOW)
         else:
-            GPIO.output(25,GPIO.HIGH)
+            GPIO.output(int(pin_number),GPIO.HIGH)
 
-        status25 = GPIO.input(25)
-        print("Status: %d",status25)
-        return {'status': status25}
+        status = GPIO.input(int(pin_number))
+        return {'pin_number':pin_number, 'status': status}
+
 
 api.add_resource(Employees, '/employees') # Route_1
 api.add_resource(Tracks, '/tracks') # Route_2
@@ -110,7 +113,9 @@ api.add_resource(Employees_Name, '/employees/<employee_id>') # Route_3
 api.add_resource(Light, '/light') # Route_4
 
 api.add_resource(ReadPin, '/readpin/<pin_number>') # Route_3
-api.add_resource(ToggleLed, '/toggleled') # Route_5
+api.add_resource(WritePin, '/writepin/<pin_number>/<value>') # Route_3
+api.add_resource(TogglePin, '/togglepin/<pin_number>') # Route_3
+
 
 def set_interval(func, sec):
     def func_wrapper():
@@ -122,11 +127,11 @@ def set_interval(func, sec):
 
 def chekLight():
         lightlevel = readLight()
-        if lightlevel < 50:
+        if lightlevel < 0:
                 print("Light Level : " + format(lightlevel,'.2f') + " lx")
 
 
 set_interval(chekLight,1)
 
 if __name__ == '__main__':
-     app.run(host='192.168.1.6',port='5002')
+     app.run(host='192.168.1.47',port='5002')

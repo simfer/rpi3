@@ -1,0 +1,27 @@
+{
+  "name": "rpi3",
+  "version": "1.0.0",
+  "description": "## Install nvm To install nvn do the following",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simfer/rpi3.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/simfer/rpi3/issues"
+  },
+  "homepage": "https://github.com/simfer/rpi3#readme",
+  "dependencies": {
+    "bh1750": "0.0.5",
+    "express": "^4.17.1",
+    "i2c-bus": "^4.0.10",
+    "raspi-i2c": "^6.2.2",
+    "rpio": "^1.0.13"
+  }
+}
