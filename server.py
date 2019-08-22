@@ -141,12 +141,13 @@ def set_interval(func, sec):
 def chekLight():
     global firstevent
     lightlevel = readLight()
-    if lightlevel < 10:
-            print("Light Level : " + format(lightlevel,'.2f') + " lx")
-    if lightlevel < 10 and (not firstevent):
-        m = "Light Level : " + format(lightlevel,'.2f') + " lx"
-        sendEmailMessage("simmaco.ferriero@live.it", "simmaco.ferriero@gmail.com", "Alarm light", m)
-        firstevent = True
+    if lightlevel < 50:
+        print("Light Level : " + format(lightlevel,'.2f') + " lx")
+        if not firstevent:
+            m = "Alarm! Light Level : " + format(lightlevel,'.2f') + " lx"
+            print(m)
+            sendEmailMessage("simmaco.ferriero@live.it", "simmaco.ferriero@gmail.com", "Alarm light", m)
+            firstevent = True
 
 
 def sendEmailMessage(f,t,s,m):
@@ -162,13 +163,11 @@ def sendEmailMessage(f,t,s,m):
     s.ehlo() # Hostname to send for this command defaults to the fully qualified domain name of the local host.
     s.starttls() #Puts connection to SMTP server in TLS mode
     s.ehlo()
-    s.login('simmaco.ferriero@live.it', 'frr68smc')
+    s.login('simmaco.ferriero@live.it', '<YOUR_PASSWORD>')
 
     s.sendmail(f, t, msg.as_string())
 
     s.quit()
-
-firstevent = False
 
 set_interval(chekLight,1)
 
