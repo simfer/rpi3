@@ -19,7 +19,7 @@ GPIO.setup(25, GPIO.OUT)
 
 # Define some constants from the datasheet
 
-DEVICE     = 0x23 # Default device I2C address
+DEVICE     = 35 # Default device I2C address
 
 POWER_DOWN = 0x00 # No active state
 POWER_ON   = 0x01 # Power on
@@ -88,7 +88,7 @@ class Light(Resource):
 
 class ReadI2CDevice(Resource):
     def get(self, device_address):
-        I2CDeviceValue = readDevice(hex(23))
+        I2CDeviceValue = readDevice(int(device_address))
         return {'i2cdevicevalue': I2CDeviceValue}
 
 class ReadPin(Resource):
@@ -144,4 +144,4 @@ def chekLight():
 set_interval(chekLight,1)
 
 if __name__ == '__main__':
-     app.run(host='192.168.1.47',port='5002')
+     app.run(host='192.168.1.38',port='5002')
