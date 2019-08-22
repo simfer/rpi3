@@ -1,36 +1,17 @@
-# Import smtplib for the actual sending function
+import email
 import smtplib
 
-# Import the email modules we'll need
-from email.mime.text import MIMEText
+msg = email.message_from_string('warning')
+msg['From'] = "simmaco.ferriero@live.it"
+msg['To'] = "simmaco.ferriero@gmail.com"
+msg['Subject'] = "Ciao a tutti"
 
-textfile = "pippo.txt"
+s = smtplib.SMTP("smtp.live.com",587)
+s.ehlo() # Hostname to send for this command defaults to the fully qualified domain name of the local host.
+s.starttls() #Puts connection to SMTP server in TLS mode
+s.ehlo()
+s.login('simmaco.ferriero@live.it', 'frr68smc')
 
-# Open a plain text file for reading.  For this example, assume that
-# the text file contains only ASCII characters.
-with open(textfile, 'rb') as fp:
-    # Create a text/plain message
-    msg = MIMEText(fp.read())
+s.sendmail("simmaco.ferriero@live.it", "simmaco.ferriero@gmail.com", msg.as_string())
 
-me = "simmaco.ferriero@gmail.com"
-you = "simmaco.ferriero@sap.com"
-msg['Subject'] = 'The contents of %s' % textfile
-msg['From'] = me
-msg['To'] = you
-
-import textwrap
-import smtplib
-
-mysubject = "send test from python"
-mytext = "simmaco simmaco"
-
-
-server = smtplib.SMTP('smtp.gmail.com',587)
-
-server.starttls()
-
-server.login('simmaco.ferriero@gmail.com','')
-
-server.sendmail(me,you,msg)
-
-server.quit()
+s.quit()

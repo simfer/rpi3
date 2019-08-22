@@ -3,11 +3,14 @@ from flask_restful import Resource, Api
 from sqlalchemy import create_engine
 from json import dumps
 from flask_jsonpify import jsonify
+from threading import Timer, Thread, Event
 
 import RPi.GPIO as GPIO
 import smbus
 import time
-import threading
+import signal
+
+firstevent = False
 
 db_connect = create_engine('sqlite:///chinook.db')
 app = Flask(__name__)
@@ -131,17 +134,46 @@ def set_interval(func, sec):
     def func_wrapper():
         set_interval(func, sec)
         func()
-    t = threading.Timer(sec, func_wrapper)
+    t = Timer(sec, func_wrapper)
     t.start()
     return t
 
 def chekLight():
-        lightlevel = readLight()
-        if lightlevel < 0:
-                print("Light Level : " + format(lightlevel,'.2f') + " lx")
+    global firstevent
+    lightlevel = readLight()
+    if lightlevel < 10:
+            print("Light Level : " + format(lightlevel,'.2f') + " lx")
+    if lightlevel < 10 and (not firstevent):
+        m = "Light Level : " + format(lightlevel,'.2f') + " lx"
+        sendEmailMessage("simmaco.ferriero@live.it", "simmaco.ferriero@gmail.com", "Alarm light", m)
+        firstevent = True
 
+
+def sendEmailMessage(f,t,s,m):
+    import email
+    import smtplib
+
+    msg = email.message_from_string(m)
+    msg['From'] = f
+    msg['To'] = t
+    msg['Subject'] = s
+
+    s = smtplib.SMTP("smtp.live.com",587)
+    s.ehlo() # Hostname to send for this command defaults to the fully qualified domain name of the local host.
+    s.starttls() #Puts connection to SMTP server in TLS mode
+    s.ehlo()
+    s.login('simmaco.ferriero@live.it', 'frr68smc')
+
+    s.sendmail(f, t, msg.as_string())
+
+    s.quit()
+
+firstevent = False
 
 set_interval(chekLight,1)
 
+
+
 if __name__ == '__main__':
-     app.run(host='192.168.1.38',port='5002')
+    firstevent = False
+    app.run(host='192.168.1.38',port='5002')
