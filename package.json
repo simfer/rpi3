@@ -19,7 +19,7 @@
   "homepage": "https://github.com/simfer/rpi3#readme",
   "dependencies": {
     "bh1750": "0.0.5",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "i2c-bus": "^4.0.10",
     "raspi-i2c": "^6.2.2",
     "rpio": "^1.0.13"
